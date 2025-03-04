@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'PixelFont';
+  src: url('https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nVivNm4I81.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --solana-purple: #9945FF;
+  --solana-green: #14F195;
+  --cream: #f8f0d8;
+}
+
+.pixel-font {
+  font-family: 'PixelFont', 'Press Start 2P', monospace;
+  image-rendering: pixelated;
+}
+
+.pixel-text {
+  font-family: 'PixelFont', 'Press Start 2P', monospace;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+}
+
+.pixel-title {
+  font-family: 'PixelFont', 'Press Start 2P', monospace;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  transform: scale(1, 1.2);
+  display: inline-block;
+}
+
+.text-solana-purple {
+  color: var(--solana-purple);
+}
+
+.text-solana-green {
+  color: var(--solana-green);
+}
+
+.bg-cream {
+  background-color: var(--cream);
+}
+
+.bg-solana-purple {
+  background-color: var(--solana-purple);
+}
+
+.pixel-border {
+  position: relative;
+  border: 4px solid #000;
+  box-shadow: 0 0 0 4px #fff, 0 0 0 8px #000;
+  image-rendering: pixelated;
+}
+
+.pixel-border::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+.pixel-border::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 16px;
+  height: 16px;
+  background-color: #000;
+  box-shadow: 
+    calc(100% - 8px) 0 #000,
+    0 calc(100% - 8px) #000,
+    calc(100% - 8px) calc(100% - 8px) #000;
+  pointer-events: none;
+}
+
+.pixel-button {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  background-color: #e0c080;
+  color: #000;
+  border: 4px solid #000;
+  font-family: 'PixelFont', 'Press Start 2P', monospace;
+  font-size: 1rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.1s ease;
+  image-rendering: pixelated;
+}
+
+.pixel-button:hover {
+  background-color: #f0d090;
+  transform: translateY(-2px);
+}
+
+.pixel-button:active {
+  transform: translateY(2px);
+}
+
+/* Health bar styling */
+.health-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #333;
+  border: 4px solid #000;
+  position: relative;
+  overflow: hidden;
+}
+
+.health-bar-fill {
+  height: 100%;
+  background-color: var(--solana-green);
+  transition: width 0.3s ease;
+}
+
+/* Progress bar styling */
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #333;
+  border: 4px solid #000;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--solana-purple);
+  transition: width 0.3s ease;
+}
+
+/* Animation for pixel elements */
+@keyframes pixel-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.pixel-pulse {
+  animation: pixel-pulse 2s infinite;
+}
+
+/* Spinning animation for enemies */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Copy button animation */
+@keyframes copy-success {
+  0% { opacity: 0; transform: translateY(5px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.copy-success {
+  animation: copy-success 2s ease-in-out;
+}
