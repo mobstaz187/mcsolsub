@@ -21,7 +21,10 @@ const MIN_FIRE_INTERVAL = 50; // Minimum fire interval (fastest fire rate)
 const DIFFICULTY_INTERVAL = 15; // Seconds between difficulty increases (default: 15)
 const MAX_DIFFICULTY = 100; // Maximum difficulty level (1-100)
 const FIRE_RATE_INCREASE = 0.2; // 20% faster fire rate per difficulty level
-const ENEMY_COUNT_MULTIPLIER = 1.3; // Increase enemy count by 20% per level
+const FIRE_RATE_INCREASE_HIGH_LEVEL = 0.005; // Only 0.5% increase after level 10
+const ENEMY_COUNT_MULTIPLIER = 1.3; // Increase enemy count by 30% per level
+const ENEMY_COUNT_MULTIPLIER_HIGH_LEVEL = 1.01; // Only 1% increase after level 10
+const HIGH_LEVEL_THRESHOLD = 10; // Level at which to switch to lower multiplier
 
 // Configurable enemy hitbox size
 const ENEMY_HITBOX_SIZE = 20; // Size in pixels (previously hardcoded as 10)
@@ -38,8 +41,8 @@ const CHARACTER_HITBOX_SIZE = 20; // Size in pixels for character hitbox
 const SHOW_HITBOXES = false; // Set to false to hide hitbox visualization
 
 // Configurable social links and wallet address
-const WALLET_ADDRESS = "Updating...";
-const X_PROFILE_URL = "https://x.com";
+const WALLET_ADDRESS = "865tPtFHdQqsREAir6QrTzipMtwAceeBEC1ansCnpump";
+const X_PROFILE_URL = "https://x.com/SurvivorSolana";
 
 // Direction types
 type Direction = 'up' | 'down' | 'left' | 'right' | null;
@@ -85,7 +88,7 @@ function App() {
   // Initialize background music
   useEffect(() => {
     // Create audio element
-    audioRef.current = new Audio('/src/Assets/Track001.mp3');
+    audioRef.current = new Audio('./src/Assets/Track001.mp3');
     audioRef.current.loop = true;
     audioRef.current.volume = 0.7;
     
@@ -464,14 +467,20 @@ function App() {
       setDifficultyLevel(prev => Math.min(MAX_DIFFICULTY, prev + 1));
       setLastLevelUp(gameTime);
       
-      // Increase enemy spawn count based on difficulty level
-      setEnemySpawnCount(prev => Math.ceil(prev * ENEMY_COUNT_MULTIPLIER));
+      // Increase enemy spawn count based on difficulty level and threshold
+      setEnemySpawnCount(prev => {
+        // Use different multiplier based on current difficulty level
+        const multiplier = difficultyLevel >= HIGH_LEVEL_THRESHOLD 
+          ? ENEMY_COUNT_MULTIPLIER_HIGH_LEVEL 
+          : ENEMY_COUNT_MULTIPLIER;
+        return Math.ceil(prev * multiplier);
+      });
       
       // Show level up notification
       setShowLevelUp(true);
       setTimeout(() => setShowLevelUp(false), 3000);
     }
-  }, [gameTime, gameStarted, gameOver, lastLevelUp]);
+  }, [gameTime, gameStarted, gameOver, lastLevelUp, difficultyLevel]);
   
   // Update spawn interval and fire rate when difficulty changes
   useEffect(() => {
@@ -484,10 +493,22 @@ function App() {
     );
     setSpawnInterval(newSpawnInterval);
     
-    // Calculate new fire interval based on difficulty (20% faster per level)
-    // Formula: initial * (1 - increase)^(level-1)
-    // This gives a diminishing returns effect so it doesn't get too fast too quickly
-    const fireRateMultiplier = Math.pow(1 - FIRE_RATE_INCREASE, difficultyLevel - 1);
+    // Calculate new fire interval based on difficulty with different rates for high levels
+    // For levels 1-9, use normal fire rate increase
+    // For levels 10+, use reduced fire rate increase
+    let fireRateMultiplier;
+    
+    if (difficultyLevel < HIGH_LEVEL_THRESHOLD) {
+      // Normal fire rate increase for early levels
+      fireRateMultiplier = Math.pow(1 - FIRE_RATE_INCREASE, difficultyLevel - 1);
+    } else {
+      // Apply normal increase for first 9 levels
+      const baseMultiplier = Math.pow(1 - FIRE_RATE_INCREASE, HIGH_LEVEL_THRESHOLD - 1);
+      // Then apply reduced increase for remaining levels
+      const highLevelMultiplier = Math.pow(1 - FIRE_RATE_INCREASE_HIGH_LEVEL, difficultyLevel - HIGH_LEVEL_THRESHOLD);
+      fireRateMultiplier = baseMultiplier * highLevelMultiplier;
+    }
+    
     const newFireInterval = Math.max(
       MIN_FIRE_INTERVAL,
       Math.round(INITIAL_FIRE_INTERVAL * fireRateMultiplier)
@@ -714,7 +735,7 @@ function App() {
         style={{ 
           width: GAME_WIDTH, 
           height: GAME_HEIGHT,
-          backgroundImage: "url('/src/Assets/Background.png')",
+          backgroundImage: "url('./src/Assets/Background.png')",
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
